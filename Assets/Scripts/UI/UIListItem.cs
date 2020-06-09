@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class UIListItem : MonoBehaviour
+public class UIListItem : MonoBehaviour, IPointerDownHandler
 {
     public ItemData data;
 
@@ -18,6 +19,8 @@ public class UIListItem : MonoBehaviour
 
     public UIItem ItemPrefab;
 
+    public Canvas ParentCavas;
+
     private void Start()
     {
         ItemImage.sprite = data.itemImage;
@@ -27,11 +30,34 @@ public class UIListItem : MonoBehaviour
         ItemTypeLabel.text = GameManager.GlobalData.GetTypeText(data.itemType);
     }
 
-    public void GetItem()
+    public void GetItem(Vector3 pointDown)
     {
-        UIItem newItem = ObjectPool.Spawn(ItemPrefab);
+        UIItem newItem = ObjectPool.SpawnUI(ItemPrefab);
+        newItem.ItemRtf.SetParent(ParentCavas.transform);
+        Vector3 pressPosition = GameManager.UICamera.ScreenToWorldPoint(pointDown);
+        pressPosition.z = ParentCavas.GetComponent<RectTransform>().position.z;
+        newItem.ItemRtf.position = pressPosition;
+        newItem.ItemRtf.localScale = Vector3.one;
+        newItem.ItemRtf.sizeDelta = data.rtfSize;
         newItem.SetData(data);
+        
+        UIItem.SelectedItem = newItem.gameObject;
+        UIItem.SelectedItemSize = data.size;
+        UIItem.IsDragging = true;
     }
 
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        GetItem(eventData.position);
+    }
 
+    private void Update()
+    {
+        UIItem item = UIItem.SelectedItem?.GetComponent<UIItem>();
+        if(item != null)
+        {
+            Debug.Log(item.ItemRtf.anchoredPosition);
+
+        }
+    }
 }

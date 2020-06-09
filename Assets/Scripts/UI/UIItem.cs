@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 public class UIItem : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class UIItem : MonoBehaviour
     public EItemType ItemType { get { return m_ItemData.itemType; } }
 
     [SerializeField]
-    private ItemData m_ItemData;
+    protected ItemData m_ItemData;
 
     public IntVector2 ItemSize { get { return m_ItemData.size; } }
 
@@ -30,6 +31,7 @@ public class UIItem : MonoBehaviour
 
     public virtual void SetData(ItemData data)
     {
+        
     }
 
     private void Update()
